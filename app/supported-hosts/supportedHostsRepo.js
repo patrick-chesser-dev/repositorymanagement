@@ -1,15 +1,15 @@
 class SupportedHostsRepo {
+    #s3 = null;
     constructor(s3) {
-        this.s3 = s3;
+        this.#s3 = s3;
     }
 
     getSupportedHosts() {
-        return {
+        return [{
             host: 'github',
             url: 'https://github.com'
-        };
+        }];
     }
-
 }
 
 exports.SupportedHostsRepo = SupportedHostsRepo;

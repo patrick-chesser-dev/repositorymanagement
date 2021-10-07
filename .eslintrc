@@ -5,6 +5,7 @@
         "**/integrationTest/**/*.js",
         "**/node_modules/**/*"
       ],
+    "parser": "babel-eslint",
     "rules": {
         "semi":["error", "always"],
         "camelcase":"off",

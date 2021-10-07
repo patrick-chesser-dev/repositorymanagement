@@ -13,10 +13,10 @@ const buildMockRepo = supportedHosts => {
 }
 
 test('supported repos should equal "github"', async () => {
-    const expected = {
+    const expected = [{
         host: 'github',
         url: 'https://github.com'
-    };
+    }];
 
     const mockRepo = buildMockRepo(expected)
     const sut = new Sut(mockRepo);

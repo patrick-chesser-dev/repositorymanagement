@@ -2,10 +2,9 @@ const Sut = require('../../app/supported-hosts/supportedHostsService').Supported
 const SupportedHostsRepo = require('../../app/supported-hosts/supportedHostsRepo').SupportedHostsRepo;
 
 const buildMockRepo = supportedHosts => {
-
     jest.mock('../../app/supported-hosts/supportedHostsRepo', supportedHosts => {
         return jest.fn().mockImplementation(() => {
-            return {getSupportedHosts: () => supportedHosts}
+            return { getSupportedHosts: () => supportedHosts }
         });
     });
 

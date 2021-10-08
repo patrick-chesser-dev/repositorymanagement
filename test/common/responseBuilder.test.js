@@ -1,6 +1,6 @@
 const Sut = require('../../app/common/responseBuilder').ResponseBuilder;
 
-test('buildResponse should build the expected success response', async () => {
+test('buildResponse should build the expected success response', () => {
     const responseBody = [
         {
             host: 'github',
@@ -26,7 +26,7 @@ test('buildResponse should build the expected success response', async () => {
     expect(sut.buildResponse(responseBody, statusCode)).toEqual(expected);
 });
 
-test('buildResponse should build the expected success response', async () => {
+test('buildResponse should build the expected success response', () => {
     const responseBody = "Unexpected Exception"
     const statusCode = 500;        
     

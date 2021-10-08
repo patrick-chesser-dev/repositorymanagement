@@ -2,7 +2,7 @@
 
 const { ContainerBuilder } = require('../../app/common/containerBuilder');
 const { Handler } = require('../../app/supported-hosts/handler');
-const {IocRegistrationService} = require('../../app/supported-hosts/iocRegistrationService');
+const { IocRegistrationService } = require('../../app/supported-hosts/iocRegistrationService');
 
 const containerBuilder = new ContainerBuilder();
 const regSvc = new IocRegistrationService();

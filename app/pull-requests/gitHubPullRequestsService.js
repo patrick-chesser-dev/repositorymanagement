@@ -42,9 +42,10 @@ class GitHubPullRequestsService {
 
     #validateUrlPath(repoUrl) {
         // match pattern of /{repo}/{owner}/
-        const pattern = new RegExp('^/\\w+/\\w+/$');
-        if (!pattern.test(repoUrl.pathname)) {
-            throw new InvalidArgumentError(`Url pathname is not in expected format ${repoUrl.pathname}`);
+        const split = repoUrl.pathname.split('/');
+        if (split.length !== 4) { // blank, owner, repo, blank
+            console.error(`Url pathname is not in expected format of /{repo}/{owner}/. Pathname: ${repoUrl.pathname}`);
+            throw new InvalidArgumentError(`Url pathname is not in expected format of /{repo}/{owner}/. Pathname: ${repoUrl.pathname}`);
         }
     }
 

@@ -5,7 +5,6 @@ const { SupportedHostsService } = require('./supportedHostsService');
 const { ResponseBuilder } = require('../common/responseBuilder');
 
 class IocRegistrationService {
-
     registerInfrastructure(container) {
         container.register({
             s3: awilix.asValue(new S3({ apiVersion: '2006-03-01' })),

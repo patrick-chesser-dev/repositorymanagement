@@ -1,31 +1,40 @@
 const Sut = require('../../app/common/httpService').HttpService;
-const axios = jest.createMockFromModule('axios');
+const axios = require('axios');
+const { NullArgumentError } = require('../../app/common/errors');
 
-// I'm too new to JEST to get the mock working for this package, so using a hand-rolled mock
-const buildMockAxios = response => {
-    return { get: async () => response }
-};
+jest.mock('axios');
 
-test('get should return expected success response and data', async () => {
-    const expectedResponse = {
-        status: 200,
-        data: [ {abc: 123 }]
-    };
+describe('httpService Happy Path Tests', () => {
+    test('get should return expected success response and data', async () => {
+        const expectedResponse = {
+            status: 200,
+            data: [{ abc: 123 }]
+        };
+        axios.get.mockResolvedValue(expectedResponse);
 
-    const mockAxios = buildMockAxios(expectedResponse);
+        const sut = new Sut(axios);
+        const result = await sut.unAuthenticatedGet('https://example.com');
 
-    const sut = new Sut(mockAxios);
-    const result = await sut.unAuthenticatedGet('https://example.com');
-
-    expect(result).toEqual(expectedResponse);
+        expect(result).toEqual(expectedResponse);
+    });
 });
 
-test('get should throw if an unexpected error occurs', async () => {
-    const mockAxios = {
-        get: async() => { throw new Error("Can't Connect"); }
-    };
+describe('axios negative tests', () => {
 
-    const sut = new Sut(mockAxios);
+    test('get should throw if an unexpected error occurs', async () => {
+        const mockAxios = {
+            get: async () => { throw new Error("Can't Connect"); }
+        };
 
-    await expect(async () => { await sut.unAuthenticatedGet('https://shouldthrow.com'); }).rejects.toThrow();
+        const sut = new Sut(mockAxios);
+
+        await expect(async () => { await sut.unAuthenticatedGet('https://shouldthrow.com'); }).rejects.toThrow();
+    });
+
+    test('get should throw NullArgumentError if axios is null', async () => {
+
+        const sut =
+
+            await expect(async () => new Sut()).rejects.toThrow(NullArgumentError);
+    });
 });

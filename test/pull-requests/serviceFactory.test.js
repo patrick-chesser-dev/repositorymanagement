@@ -6,7 +6,7 @@ const { InvalidArgumentError, NullArgumentError, UnsupportedHostError } = requir
 const buildMockContainer = () => {
     return {
         resolve: () => {
-            return new GitHubPullRequestsService(new HttpService());
+            return new GitHubPullRequestsService(new HttpService({}));
         }
     }
 }

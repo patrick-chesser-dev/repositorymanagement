@@ -16,6 +16,7 @@
             "ignoreReadBeforeAssign": false
         }],
         "padded-blocks": "off",
-        "space-before-function-paren": ["error", "never"]
+        "space-before-function-paren": ["error", "never"],
+        "prefer-regex-literals": "off"
     }
   }

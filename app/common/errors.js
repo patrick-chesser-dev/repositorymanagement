@@ -4,7 +4,6 @@ class NullArgumentError extends Error {
         this.name = 'NullArgumentError';
     }
 }
-
 exports.NullArgumentError = NullArgumentError;
 
 class UnsupportedHostError extends Error {
@@ -13,7 +12,6 @@ class UnsupportedHostError extends Error {
         this.name = 'UnsupportedHostError';
     }
 }
-
 exports.UnsupportedHostError = UnsupportedHostError;
 
 class InvalidArgumentError extends Error {
@@ -22,5 +20,20 @@ class InvalidArgumentError extends Error {
         this.name = 'InvalidArgumentError';
     }
 }
-
 exports.InvalidArgumentError = InvalidArgumentError;
+
+class ErrorResponseError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ErrorResponseError';
+    }
+}
+exports.ErrorResponseError = ErrorResponseError;
+
+class NotFoundError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'NotFoundError';
+    }
+}
+exports.NotFoundError = NotFoundError;

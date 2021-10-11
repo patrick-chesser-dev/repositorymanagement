@@ -1,0 +1,29 @@
+service: RepoMgmt-S3Buckets
+provider:
+  name: aws
+  deploymentBucket: pc-repo-mgmt
+  stage: ${opt:stage}
+  region: us-west-2
+functions: null
+resources:
+  Resources:
+    SupportedHostsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        Name: ${opt:stage}-SupportedHosts
+        Description: Storage for supported hosts lambda
+        AccessControl: Private
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256    
+  Outputs:
+    SupportedHostsBucketOutput:
+      Value: !Ref SupportedHostsBucket
+      Export: 
+        Name: SupportedHostsBucket
+
+
+
+      
+

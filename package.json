@@ -27,7 +27,8 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^5.0.0",
-    "jest": "^27.2.5"
+    "jest": "^27.2.5",
+    "serverless-deployment-bucket": "^1.5.1"
   },
   "dependencies": {
     "awilix": "^5.0.1",

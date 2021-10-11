@@ -1,0 +1,87 @@
+service: RepoMgmt-APIGatewayResources
+provider:
+  name: aws
+  deploymentBucket: pc-repo-mgmt
+  stage: ${opt:stage}
+  region: us-west-2
+functions: null
+resources:
+  Resources:
+    RepoManagementRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${opt:stage}-RepoManagementRestApi
+        Description: API for interactions with remote repo management system
+        EndpointConfiguration:
+          Types:
+            - EDGE
+    V1Resource:
+      Type: AWS::ApiGateway::Resource
+      Properties:
+        ParentId: !GetAtt RepoManagementRestApi.RootResourceId
+        PathPart: v1
+        RestApiId: !Ref RepoManagementRestApi
+    PullRequestsResource:
+      Type: AWS::ApiGateway::Resource
+      Properties:
+        ParentId: !Ref V1Resource
+        PathPart: pullrequests
+        RestApiId: !Ref RepoManagementRestApi
+    SupportedHostsResource:
+      Type: AWS::ApiGateway::Resource
+      Properties:
+        ParentId: !Ref V1Resource
+        PathPart: supportedHosts
+        RestApiId: !Ref RepoManagementRestApi
+    PullRequestsGetMehtod:
+      Type: AWS::ApiGateway::Method
+      Properties:
+        ApiKeyRequired: false
+        AuthorizationType: NONE
+        HttpMethod: GET
+        ResourceId: !Ref PullRequestsResource
+        RestApiId: !Ref RepoManagementRestApi
+    RepoManagementApiGatewayIamRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: ''
+              Effect: 'Allow'
+              Principal:
+                Service:
+                  - 'apigateway.amazonaws.com'
+              Action:
+                - 'sts:AssumeRole'
+        Path: '/'
+  Outputs:
+    RepoManagementRestApiOutput:
+      Value: !Ref RepoManagementRestApi
+      Export: 
+        Name: RepoManagementRestApi
+    V1ResourceOutput:
+      Value: !Ref V1Resource
+      Export: 
+        Name: V1Resource
+    PullRequestsResourceOutput:
+      Value: !Ref PullRequestsResource
+      Export: 
+        Name: PullRequestsResource
+    SupportedHostsResourceOutput:
+      Value: !Ref SupportedHostsResource
+      Export: 
+        Name: SupportedHostsResource
+    PullRequestsGetMehtodOutput:
+      Value: !Ref PullRequestsGetMehtod
+      Export: 
+        Name: PullRequestsGetMehtod
+    RepoManagementApiGatewayIamRoleOutput:
+      Value: !Ref RepoManagementApiGatewayIamRole
+      Export: 
+        Name: RepoManagementApiGatewayIamRole
+
+
+
+      
+

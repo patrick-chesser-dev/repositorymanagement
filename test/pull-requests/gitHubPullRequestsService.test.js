@@ -2,7 +2,7 @@ const Sut = require('../../app/pull-requests/gitHubPullRequestsService').GitHubP
 
 jest.mock('../../app/common/httpService');
 const { HttpService } = require('../../app/common/httpService');
-const { InvalidArgumentError, NullArgumentError, UnsupportedHostError, ErrorResponseError, NotFoundError } = require('../../app/common/errors');
+const { InvalidArgumentError, NullArgumentError, ErrorResponseError, NotFoundError } = require('../../app/common/errors');
 
 const buildMockHttpService = (generator) => {
     HttpService.mockImplementation(() => {
@@ -106,13 +106,6 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 });
 
 describe('GitHubPullRequestsService Negative Tests', () => {
-    test('invalid pathname should throw InvalidArgumentError', () => {
-        const badUrl = new URL('https://github.com/user/repo/abc123/');
-
-        const sut = new Sut({});
-        expect(async () => await sut.getOpenPullRequestCount(badUrl)).rejects.toThrow(InvalidArgumentError);
-
-    });
 
     test('404 from GitHub should throw NotFoundError', async () => {
         const url = new URL('https://github.com/user/repo/');

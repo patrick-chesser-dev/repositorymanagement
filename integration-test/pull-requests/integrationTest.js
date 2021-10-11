@@ -1,17 +1,17 @@
 'use strict';
 
-const { ContainerBuilder } = require('../../app/common/containerBuilder');
-const { Handler } = require('../../app/pull-requests/handler');
-const { IocRegistrationService } = require('../../app/pull-requests/iocRegistrationService');
+(async() => {
+    const { ContainerBuilder } = require('../../app/common/containerBuilder');
+    const { Handler } = require('../../app/pull-requests/handler');
+    const { IocRegistrationService } = require('../../app/pull-requests/iocRegistrationService');
 
-const containerBuilder = new ContainerBuilder();
-const regSvc = new IocRegistrationService();
-const container = containerBuilder.buildContainer(regSvc.registerInfrastructure, () => {}, regSvc.registerServices);
+    const containerBuilder = new ContainerBuilder();
+    const regSvc = new IocRegistrationService();
+    const container = containerBuilder.buildContainer(regSvc.registerInfrastructure, () => {}, regSvc.registerServices);
 
-const handler = new Handler(container);
+    const handler = new Handler(container);
+    console.log('handling request');
+    const result = await handler.handleRequest({ sourceurl: 'https://github.com/dotnet/ef6' });
 
-const result = async() => {
-    return await handler.handleRequest({ sourceurl: 'https://github.com/patrick-chesser-dev/repositorymanagement' });
-};
-
-console.log(JSON.stringify(result));
+    console.log(JSON.stringify(result));
+})();

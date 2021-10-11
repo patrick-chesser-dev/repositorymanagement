@@ -3,12 +3,12 @@ const { UnsupportedHostError, NullArgumentError, InvalidArgumentError } = requir
 class ServiceFactory {
     #serviceMap = new Map();
 
-    constructor(container) {
-        if (!container) {
+    constructor(gitHubPullRequestsService) {
+        if (!gitHubPullRequestsService) {
             throw new NullArgumentError('container cannot be null');
         }
         this.#serviceMap = new Map();
-        this.#serviceMap.set('github.com', container.resolve('githubPullRequestsService'));
+        this.#serviceMap.set('github.com', gitHubPullRequestsService);
     }
 
     resolveService(urlString) {

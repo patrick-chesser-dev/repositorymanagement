@@ -7,4 +7,4 @@ const iocRegistrationService = new IocRegistrationService();
 const container = containerBuilder.buildContainer(iocRegistrationService.registerInfrastructure, () => {}, iocRegistrationService.registerServices);
 const entryPoint = new Handler(container);
 
-exports.FunctionHandler = entryPoint.HandleRequest;
+exports.FunctionHandler = entryPoint.handleRequest.bind(entryPoint);

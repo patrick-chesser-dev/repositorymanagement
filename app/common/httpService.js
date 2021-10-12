@@ -16,8 +16,9 @@ class HttpService {
         try {
             return await this.#axios.get(requestUrl);
         } catch (ex) {
+            console.log(ex);
             console.error(`Unexpected error received when attempting to get pull requests. Error ${ex.stack}`);
-            throw ex;
+            return ex.response;
         }
     }
 }

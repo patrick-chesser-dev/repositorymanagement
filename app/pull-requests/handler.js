@@ -7,6 +7,7 @@ class Handler {
     }
 
     async handleRequest(event) {
+        console.log(JSON.stringify(event));
         const { serviceFactory, responseBuilder } = this.#container.cradle;
         try {
             // Future: add determination rules class to determine what function needs to be invoked
@@ -16,7 +17,7 @@ class Handler {
             return responseBuilder.buildResponse({ openPullRequestCount: result }, 200);
 
         } catch (ex) {
-            if (ex instanceof InvalidArgumentError || NullArgumentError) {
+            if (ex instanceof InvalidArgumentError || ex instanceof NullArgumentError) {
                 console.error(`Unprocessable Request. Bad Argument input. Error: ${ex.stack}`);
                 return responseBuilder.buildResponse({ status: 'Unprocessable' }, 422);
             } else if (ex instanceof NotFoundError) {

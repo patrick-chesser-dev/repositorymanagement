@@ -20,15 +20,23 @@ describe('httpService Happy Path Tests', () => {
 });
 
 describe('axios negative tests', () => {
-
-    test('get should throw if an unexpected error occurs', async () => {
+    class TestError extends Error{
+        constructor(message) {
+            super(message);
+            this.name = 'testError';
+            this.response = {
+                status: 404
+            }
+        }
+    }
+    test('get should return error response if get throws', async () => {
         const mockAxios = {
-            get: async () => { throw new Error("Can't Connect"); }
+            get: async () => { throw new TestError; }
         };
 
         const sut = new Sut(mockAxios);
-
-        await expect(async () => { await sut.unAuthenticatedGet('https://shouldthrow.com'); }).rejects.toThrow();
+        const result = await sut.unAuthenticatedGet('https://shouldthrow.com');
+        expect(result.status).toEqual(404);
     });
 
     test('get should throw NullArgumentError if axios is null', async () => {

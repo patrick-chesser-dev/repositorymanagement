@@ -1,0 +1,22 @@
+{
+    "extends": "standard",
+    "ignorePatterns": [
+        "**/test/**/*.js",
+        "**/integrationTest/**/*.js",
+        "**/node_modules/**/*"
+      ],
+    "parser": "babel-eslint",
+    "rules": {
+        "semi":["error", "always"],
+        "camelcase":"off",
+        "comma-dangle":"off",
+        "indent":["error", 4],
+        "prefer-const": ["error", {
+            "destructuring": "any",
+            "ignoreReadBeforeAssign": false
+        }],
+        "padded-blocks": "off",
+        "space-before-function-paren": ["error", "never"],
+        "prefer-regex-literals": "off"
+    }
+  }

@@ -1,0 +1,54 @@
+service: RepoMgmt-APIGatewayResources
+provider:
+  name: aws
+  deploymentBucket: pc-repo-mgmt
+  stage: ${opt:stage}
+  region: ${opt:region}
+functions: null
+resources:
+  Resources:
+    RepoManagementRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${opt:stage}-RepoManagementRestApi
+        Description: API for interactions with remote repo management system
+        EndpointConfiguration:
+          Types:
+            - EDGE
+    RepoManagementApiGatewayIamRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: ''
+              Effect: 'Allow'
+              Principal:
+                Service:
+                  - 'apigateway.amazonaws.com'
+              Action:
+                - 'sts:AssumeRole'
+        Path: '/'
+  Outputs:
+    RepoManagementRestApiId:
+      Value: 
+        !Ref RepoManagementRestApi
+      Export: 
+        Name: ${opt:stage}-us-west-2-RepoManagementRestApi-restApiId
+    RepoManagementRestApiIdRootResourceId:
+      Value:
+        Fn::GetAtt:
+          - RepoManagementRestApi
+          - RootResourceId
+      Export:
+        Name: RepoManagementRestApi-rootResourceId
+    RepoManagementApiGatewayIamRoleOutput:
+      Value: 
+        !Ref RepoManagementApiGatewayIamRole
+      Export: 
+        Name: ${opt:stage}-us-west-2-RepoManagementApiGatewayIamRole
+
+
+
+      
+

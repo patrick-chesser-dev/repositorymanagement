@@ -1,0 +1,39 @@
+# Deploying both lambdas from here for now, but could break
+# up in the future, depending on how flexible we need to be
+# from a deployment perspective
+service: RepoMgmt-LambdaResources
+provider:
+  name: aws
+  deploymentBucket: pc-repo-mgmt
+  stage: ${opt:stage}
+  region: ${opt:region}
+  runtime: nodejs14.x
+  apiGateway:
+    restApiId: 
+      !ImportValue ${opt:stage}-${opt:region}-RepoManagementRestApi-restApiId
+    restApiRootResourceId:
+      !ImportValue RepoManagementRestApi-rootResourceId
+functions:
+  PullRequestsGet:
+    handler: pull-requests/startup.FunctionHandler
+    name: ${opt:stage}-us-${opt:region}-PullRequestsGet
+    description: Lambda function to handle get requests for pull requests
+    memorySize: 128
+    timeout: 20
+    events:
+      - http: 
+          path: v1/pullrequests/
+          method: get
+          cors: true
+          integration: lambda-proxy
+
+package:
+  include:
+    - workspace/common/**/*.js
+    - workspace/pull-requests/**/*.js
+    - workspace/package.json
+    - workspace/package-lock.json
+  exclude:
+    - deploy.sh
+  excludeDevDependencies: true
+

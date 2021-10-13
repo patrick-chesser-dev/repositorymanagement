@@ -4,7 +4,7 @@ const { NullArgumentError } = require('../../app/common/errors');
 
 jest.mock('axios');
 
-describe('httpService Happy Path Tests', () => {
+describe('httpService happy path tests', () => {
     test('get should return expected success response and data', async () => {
         const expectedResponse = {
             status: 200,
@@ -19,7 +19,7 @@ describe('httpService Happy Path Tests', () => {
     });
 });
 
-describe('axios negative tests', () => {
+describe('httpService negative tests', () => {
     class TestError extends Error{
         constructor(message) {
             super(message);

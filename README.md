@@ -23,18 +23,48 @@ We will employ a serverless architecture, using AWS Cloud Native Tools: API Gate
 **System**
 
 The API Gateway will provide the rest endpoints the user will interact with. We will provide two get endpoints:
-* An endpoint to inform the user of which repos are supported
-  * This endpoint will be backed by its own lambda function that will simply return the list of supported repos, along with their expected url formats.
-  *  The supported repos will be stored in the S3 bucket
-  * This can change to another datastore at a later time if the list grows large, or we have performance issues, but should suffice for now
-* An endpoint to get the number of open pull requests for a specific repo
+* An endpoint exposing a GET request against pull requests
   * The endpoint will accept a url of the repo in question
+    * e.g. https://github.com/patrick-chesser-dev/repositorymanagement
   * Determine if the repo is supported
-  * And if so, return the open number of pull requests against the repo
-  * This will also be backed by its own lambda
+    * Only github supported for this release
+  * Determine what to return, based on query string input
+    * status (representing the status of a PR)
+      * only a status of "open" will be supported at this time
+    * countonly (letting the service know if only a count is required)
+      * only a countonly of "true" will be supported at this time
+    * The implementation should be flexible enough to allow for other types of queries in the future
 
-**Infrastructure/Deployment**
+## Infrastructure/Deployment
 
-We will use the serverless framework to deploy the resources to AWS. For this use case we will manage the API Gateway and S3 Bucket in it's own cloud formation stack, and the Lambdas in a single cloud formation stack. This will allow us to manage the infrastructure and the lambdas independently of one another. 
+We will use the serverless framework to deploy the resources to AWS. For this use case we will manage the API Gateway its own cloud formation stack, and the pull-requests service in a single cloud formation stack. This will allow us to manage the infrastructure and the lambdas independently of one another. 
 
-We could do a stack per lambda, but as the system grows, we will run into resource constraints, and it can make managing the deployments more difficult. Serverless does a good job of making sure we don't "deploy over" a resource that hasn't changed, so we should still be able to manage small, quick deployments without introducing the risk of a standard "rolling deployment"
+We could do a stack per lambda, but as the system grows, we will run into resource constraints, and it can make managing the deployments more difficult. Serverless does a good job of making sure we don't "deploy over" a resource that hasn't changed, so we should still be able to manage small, quick deployments without introducing the risk of a standard "rolling deployment". Serverless is smart enough to update only the Lambdas that have changed.
+
+**How to deploy**
+1. Ensure you have default .aws credentials, with permissions to create API Gateway, Cloudwatch, and Lambda Resources
+2. Deploy the API Gateway
+   1. > cd aws-infrastructure/api-gateway
+   2. serverless deploy --stage {stageYouWishToDeploy} --region {regionYouWishToDeployTo} example:
+      1. > serverless deploy --stage dev --region us-west-2
+3. Deploy the pull-requests Lambada
+   1. > cd aws-infrastructure/lambda
+   2. Run the deploy.sh script
+      1. if file permission revert on a *nix system, be sure to chmod +x the file
+      2. the script requires two arguments, the first is the stage, the second is the region. Example
+      3. > ./deploy.sh dev us-west-2
+
+## Calling the Endpoint
+The service was designed to be flexible and (eventually) allow support for multiple hosts, not just github. Additionally, it was designed to eventually allow support for querying not just the count of pull requests, but returning the pull requests as well. Finally, it was  also designed to allow for additional statuses, not just open.
+
+Since the current requirement for this project is to support getting the number of open pull requests, that is the only data that the system will allow the user to request. As such, url will need to be in the below format:
+> {apiGatewayHost}/v1/pullrequests?sourceurl={githubRepoUrl}&status=open&countonly=true
+
+Any other format will result in an error response. 
+
+### About the URL Format
+I went back and forth on using query params vs pathing in the URL. For instance, I could have done something like this:
+v1/{repoHost}/{repoUser}/{repoName}/pullrequests/
+
+However, I felt this could prove inflexible if there were different ways a repo is tracked in a new system.
+

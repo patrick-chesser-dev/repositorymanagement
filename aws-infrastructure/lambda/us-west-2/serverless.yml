@@ -8,19 +8,25 @@ provider:
   stage: ${opt:stage}
   region: us-west-2
   runtime: nodejs14.x
+  apiGateway:
+    restApiId: 
+      !ImportValue ${opt:stage}-us-west-2-RepoManagementRestApi-restApiId
+    restApiRootResourceId:
+      !ImportValue RepoManagementRestApi-rootResourceId
 functions:
   PullRequestsGet:
-    # apiGateway:
-    #   restApiId: 
-    #     !ImportValue ${opt:stage}-us-west-2-RepoManagementRestApi
-    #   parentId: 
-    #     !ImportValue ${opt:stage}-us-west-2-PullRequestsResource
-    #   endpointType: EDGE
     handler: pull-requests/startup.FunctionHandler
     name: ${opt:stage}-us-west-2-PullRequestsGet
     description: Lambda function to handle get requests for pull requests
     memorySize: 128
     timeout: 20
+    events:
+      - http: 
+          path: v1/pullrequests/
+          method: get
+          cors: true
+          integration: lambda-proxy
+
 package:
   include:
     - workspace/common/**/*.js

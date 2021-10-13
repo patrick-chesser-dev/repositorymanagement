@@ -29,7 +29,7 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 
         const sut = new Sut(mockHttpService);
         const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
-        expect(result).toEqual(3);
+        expect(result).toEqual({ pullRequestsCount: 3 });
     });
 
     test('valid repo, with non alpha numeric chars, should return expected results for single page', async () => {
@@ -46,7 +46,7 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 
         const sut = new Sut(mockHttpService);
         const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
-        expect(result).toEqual(3);
+        expect(result).toEqual({ pullRequestsCount: 3 });
     });
 
     function* twoPageGenerator(data, firstPageIndex, secondPageIndex) {
@@ -72,7 +72,7 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 
         const sut = new Sut(mockHttpService);
         const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
-        expect(result).toEqual(200);
+        expect(result).toEqual({ pullRequestsCount: 200 });
     });
 
     test('valid repo should return expected results for a full page and a partial page', async () => {
@@ -92,7 +92,7 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 
         const sut = new Sut(mockHttpService);
         const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
-        expect(result).toEqual(150);
+        expect(result).toEqual({ pullRequestsCount: 150 });
     });
 
     test('valid repo should return 0 for a page with no open pull requests', async () => {
@@ -111,12 +111,11 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 
         const sut = new Sut(mockHttpService);
         const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
-        expect(result).toEqual(0);
+        expect(result).toEqual({ pullRequestsCount: 0 });
     });
 });
 
 describe('GitHubPullRequestsService Negative Tests', () => {
-
     test('404 from GitHub should throw NotFoundError', async () => {
         const url = new URL('https://github.com/user/repo/');
         const isCountOnly = 'true';

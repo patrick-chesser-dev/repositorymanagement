@@ -7,13 +7,18 @@ class Handler {
     }
 
     async handleRequest(event) {
-        console.log(JSON.stringify(event));
         const { serviceFactory, responseBuilder } = this.#container.cradle;
         try {
+            console.log(JSON.stringify(event));
+            const sourceUrl = event.queryStringParameters.sourceurl;
+
             // Future: add determination rules class to determine what function needs to be invoked
-            // for now, only supporting getOpenPullRequestCount
-            const service = serviceFactory.resolveService(event.sourceurl);
-            const result = await service.getOpenPullRequestCount(new URL(event.sourceurl));
+            // for now, only supporting getting the count of the open pull requests.
+            const isCountOnly = event.queryStringParameters.countonly;
+            const status = event.queryStringParameters.status;
+
+            const service = serviceFactory.resolveService(sourceUrl);
+            const result = await service.getPullRequests(new URL(sourceUrl), status, isCountOnly);
             return responseBuilder.buildResponse({ openPullRequestCount: result }, 200);
 
         } catch (ex) {

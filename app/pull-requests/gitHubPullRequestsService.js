@@ -1,4 +1,4 @@
-const { NullArgumentError, ErrorResponseError, NotFoundError } = require('../common/errors');
+const { NullArgumentError, ErrorResponseError, NotFoundError, InvalidArgumentError } = require('../common/errors');
 
 class GitHubPullRequestsService {
     #maxPageSize = 100;
@@ -13,7 +13,12 @@ class GitHubPullRequestsService {
         this.#httpService = httpService;
     }
 
-    async getOpenPullRequestCount(repoUrl) {
+    // this is where type script interfaces would be handy
+    // any service should implement this interface to start
+    async getPullRequests(repoUrl ,status, isCountOnly) {
+        
+        this.#validateInputs(status, isCountOnly);
+
         let morePages = true;
         let openPullRequests = [];
 
@@ -21,7 +26,7 @@ class GitHubPullRequestsService {
             throw new NullArgumentError('repoUrl cannot be null');
         }
 
-        const url = `${this.#baseUrl}${repoUrl.pathname}/pulls?per_page=${this.#maxPageSize}&status=open`;
+        const url = `${this.#baseUrl}${repoUrl.pathname}/pulls?per_page=${this.#maxPageSize}&status=${status}`;
         let count = 1;
         do {
             const response = await this.#httpService.unAuthenticatedGet(`${url}&page=${count}`);
@@ -36,7 +41,26 @@ class GitHubPullRequestsService {
 
         } while (morePages);
 
-        return openPullRequests.length;
+        return isCountOnly ? openPullRequests.length : openPullRequests;
+    }
+
+    #validateInputs(status, isCountOnly) {
+        if (!status) { 
+            console.error(`Error: status is missing from query input`);
+            throw new NullArgumentError('status must be present on query');
+        }
+        if (status.toLowerCase() !== 'open') {
+            console.error(`Error: request for unsupported status: ${status}`);
+            throw new InvalidArgumentError('status must be present on query');
+        }
+        if (!isCountOnly) { 
+            console.error(`Error: countonly is missing from query input`);
+            throw new NullArgumentError('status must be present on query');
+        }
+        if (isCountOnly.toLowerCase() !== 'true' ) {
+            console.error(`Error: countonly param not supplied or set to an invalid input. isCountOnly: ${isCountOnly}`);
+            throw new InvalidArgumentError('countonly must be present on query and set to true');
+        }
     }
 
     #validateResponse(response, repoUrl) {

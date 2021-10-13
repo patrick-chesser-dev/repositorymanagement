@@ -2,7 +2,7 @@ const Sut = require('../../app/pull-requests/gitHubPullRequestsService').GitHubP
 
 jest.mock('../../app/common/httpService');
 const { HttpService } = require('../../app/common/httpService');
-const { InvalidArgumentError, NullArgumentError, ErrorResponseError, NotFoundError } = require('../../app/common/errors');
+const { NullArgumentError, ErrorResponseError, NotFoundError, InvalidArgumentError } = require('../../app/common/errors');
 
 const buildMockHttpService = (generator) => {
     HttpService.mockImplementation(() => {
@@ -17,6 +17,8 @@ const buildMockHttpService = (generator) => {
 describe('GitHubPullRequestsService Happy Path Tests', () => {
     test('valid repo should return expected results for single page', async () => {
         const goodUrl = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'true';
+        const status = 'open';
         const dataGenerator = () => {
             return {
                 data: [1, 2, 3],
@@ -26,12 +28,14 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
         const mockHttpService = buildMockHttpService(dataGenerator);
 
         const sut = new Sut(mockHttpService);
-        const result = await sut.getOpenPullRequestCount(goodUrl);
+        const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
         expect(result).toEqual(3);
     });
 
     test('valid repo, with non alpha numeric chars, should return expected results for single page', async () => {
         const goodUrl = new URL('https://github.com/patrick-chesser-dev/repo/');
+        const isCountOnly = 'true';
+        const status = 'open';
         const dataGenerator = () => {
             return {
                 data: [1, 2, 3],
@@ -41,7 +45,7 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
         const mockHttpService = buildMockHttpService(dataGenerator);
 
         const sut = new Sut(mockHttpService);
-        const result = await sut.getOpenPullRequestCount(goodUrl);
+        const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
         expect(result).toEqual(3);
     });
 
@@ -53,6 +57,8 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 
     test('valid repo should return expected results for multiple full pages and a blank page', async () => {
         const goodUrl = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'true';
+        const status = 'open';
 
         const dataGenerator = twoPageGenerator([...Array(200).keys()], 100, 200);
         const returnFunction = () => {
@@ -65,12 +71,14 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
         const mockHttpService = buildMockHttpService(returnFunction);
 
         const sut = new Sut(mockHttpService);
-        const result = await sut.getOpenPullRequestCount(goodUrl);
+        const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
         expect(result).toEqual(200);
     });
 
     test('valid repo should return expected results for a full page and a partial page', async () => {
         const goodUrl = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'true';
+        const status = 'open';
 
         const dataGenerator = twoPageGenerator([...Array(150).keys()], 100, 150);
         const returnFunction = () => {
@@ -83,12 +91,14 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
         const mockHttpService = buildMockHttpService(returnFunction);
 
         const sut = new Sut(mockHttpService);
-        const result = await sut.getOpenPullRequestCount(goodUrl);
+        const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
         expect(result).toEqual(150);
     });
 
     test('valid repo should return 0 for a page with no open pull requests', async () => {
         const goodUrl = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'true';
+        const status = 'open';
 
         const returnFunction = () => {
             return {
@@ -100,7 +110,7 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
         const mockHttpService = buildMockHttpService(returnFunction);
 
         const sut = new Sut(mockHttpService);
-        const result = await sut.getOpenPullRequestCount(goodUrl);
+        const result = await sut.getPullRequests(goodUrl, status, isCountOnly);
         expect(result).toEqual(0);
     });
 });
@@ -109,6 +119,9 @@ describe('GitHubPullRequestsService Negative Tests', () => {
 
     test('404 from GitHub should throw NotFoundError', async () => {
         const url = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'true';
+        const status = 'open';
+
         const dataGenerator = () => {
             return {
                 status: 404,
@@ -117,11 +130,14 @@ describe('GitHubPullRequestsService Negative Tests', () => {
         };
         const mockHttpService = buildMockHttpService(dataGenerator);
         const sut = new Sut(mockHttpService);
-        expect(async () => await sut.getOpenPullRequestCount(url)).rejects.toThrow(NotFoundError);
+        expect(async () => await sut.getPullRequests(url, status, isCountOnly)).rejects.toThrow(NotFoundError);
     });
 
     test('Non 404 from GitHub should throw ErrorResponseError', async () => {
         const url = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'true';
+        const status = 'open';
+
         const dataGenerator = () => {
             return {
                 status: 418,
@@ -130,7 +146,39 @@ describe('GitHubPullRequestsService Negative Tests', () => {
         };
         const mockHttpService = buildMockHttpService(dataGenerator);
         const sut = new Sut(mockHttpService);
-        expect(async () => await sut.getOpenPullRequestCount(url)).rejects.toThrow(ErrorResponseError);
+        expect(async () => await sut.getPullRequests(url, status, isCountOnly)).rejects.toThrow(ErrorResponseError);
+    });
+
+    test('supplied status of anything but open should throw InvalidArgumentError', async () => {
+        const url = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'true';
+        const status = 'closed';
+        
+        const dataGenerator = () => {
+            return {
+                status: 200,
+                data: []
+            };
+        };
+        const mockHttpService = buildMockHttpService(dataGenerator);
+        const sut = new Sut(mockHttpService);
+
+        expect(async () => await sut.getPullRequests(url, status, isCountOnly)).rejects.toThrow(InvalidArgumentError);
+    });
+
+    test('missing status should throw InvalidArgumentError', async () => {
+        const url = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'true';
+        
+        const dataGenerator = () => {
+            return {
+                status: 200,
+                data: []
+            };
+        };
+        const mockHttpService = buildMockHttpService(dataGenerator);
+        const sut = new Sut(mockHttpService);
+        expect(async () => await sut.getPullRequests(url, null, isCountOnly)).rejects.toThrow(NullArgumentError);
     });
 
     test('null http service should throw NullArgumentError', () => {

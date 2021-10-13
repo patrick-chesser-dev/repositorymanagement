@@ -11,13 +11,13 @@
 
     const handler = new Handler(container);
     console.log('handling request');
-    const event = { 
-        queryStringParameters: { 
+    const event = {
+        queryStringParameters: {
             sourceurl: 'https://github.com/dotnet/ef6',
             status: 'open',
             countonly: 'true'
         }
-    }
+    };
     const result = await handler.handleRequest(event);
 
     console.log(JSON.stringify(result));

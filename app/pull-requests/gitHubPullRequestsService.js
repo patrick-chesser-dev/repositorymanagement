@@ -15,8 +15,8 @@ class GitHubPullRequestsService {
 
     // this is where type script interfaces would be handy
     // any service should implement this interface to start
-    async getPullRequests(repoUrl ,status, isCountOnly) {
-        
+    async getPullRequests(repoUrl, status, isCountOnly) {
+
         this.#validateInputs(status, isCountOnly);
 
         let morePages = true;
@@ -45,19 +45,19 @@ class GitHubPullRequestsService {
     }
 
     #validateInputs(status, isCountOnly) {
-        if (!status) { 
-            console.error(`Error: status is missing from query input`);
+        if (!status) {
+            console.error('Error: status is missing from query input');
             throw new NullArgumentError('status must be present on query');
         }
         if (status.toLowerCase() !== 'open') {
             console.error(`Error: request for unsupported status: ${status}`);
             throw new InvalidArgumentError('status must be present on query');
         }
-        if (!isCountOnly) { 
-            console.error(`Error: countonly is missing from query input`);
+        if (!isCountOnly) {
+            console.error('Error: countonly is missing from query input');
             throw new NullArgumentError('status must be present on query');
         }
-        if (isCountOnly.toLowerCase() !== 'true' ) {
+        if (isCountOnly.toLowerCase() !== 'true') {
             console.error(`Error: countonly param not supplied or set to an invalid input. isCountOnly: ${isCountOnly}`);
             throw new InvalidArgumentError('countonly must be present on query and set to true');
         }

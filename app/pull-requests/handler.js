@@ -19,7 +19,7 @@ class Handler {
 
             const service = serviceFactory.resolveService(sourceUrl);
             const result = await service.getPullRequests(new URL(sourceUrl), status, isCountOnly);
-            return responseBuilder.buildResponse({ openPullRequestCount: result }, 200);
+            return responseBuilder.buildResponse(result, 200);
 
         } catch (ex) {
             if (ex instanceof InvalidArgumentError || ex instanceof NullArgumentError) {

@@ -20,7 +20,7 @@ class GitHubPullRequestsService {
         this.#validateInputs(status, isCountOnly);
 
         let morePages = true;
-        let openPullRequests = [];
+        let pullRequests = [];
 
         if (!repoUrl) {
             throw new NullArgumentError('repoUrl cannot be null');
@@ -31,7 +31,7 @@ class GitHubPullRequestsService {
         do {
             const response = await this.#httpService.unAuthenticatedGet(`${url}&page=${count}`);
             this.#validateResponse(response, repoUrl);
-            openPullRequests = openPullRequests.concat(response.data);
+            pullRequests = pullRequests.concat(response.data);
 
             if (response.data.length === this.#maxPageSize) {
                 ++count;
@@ -41,7 +41,7 @@ class GitHubPullRequestsService {
 
         } while (morePages);
 
-        return isCountOnly ? openPullRequests.length : openPullRequests;
+        return isCountOnly ? { pullRequestsCount: pullRequests.length } : { pullRequests: pullRequests };
     }
 
     #validateInputs(status, isCountOnly) {

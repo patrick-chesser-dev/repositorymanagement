@@ -116,7 +116,6 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 });
 
 describe('GitHubPullRequestsService Negative Tests', () => {
-
     test('404 from GitHub should throw NotFoundError', async () => {
         const url = new URL('https://github.com/user/repo/');
         const isCountOnly = 'true';

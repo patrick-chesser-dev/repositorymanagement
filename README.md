@@ -50,14 +50,14 @@ We could do a stack per lambda, but as the system grows, we will run into resour
 1. Ensure you have default .aws credentials, with permissions to create API Gateway, Cloudwatch, and Lambda Resources
 2. Deploy the API Gateway
    1. > cd aws-infrastructure/api-gateway
-   2. serverless deploy --stage {stageYouWishToDeploy} --region {regionYouWishToDeployTo} example:
-      1. > serverless deploy --stage dev --region us-west-2
+   2. serverless deploy --stage {stageYouWishToDeploy} --region {regionYouWishToDeployTo} --bucket {existing deployment S3 Bucket}example:
+      1. > serverless deploy --stage dev --region us-west-2 --bucket pc-repo-mgt
 3. Deploy the pull-requests Lambada
    1. > cd aws-infrastructure/lambda
    2. Run the deploy.sh script
       1. if file permission revert on a *nix system, be sure to chmod +x the file
-      2. the script requires two arguments, the first is the stage, the second is the region. Example
-      3. > ./deploy.sh dev us-west-2
+      2. the script requires three arguments, the first is the stage, the second is the region, the third is the deployment bucket. Example
+      3. > ./deploy.sh dev us-west-2 pc-repo-mgt
 
 ## Calling the Endpoint
 The service was designed to be flexible and (eventually) allow support for multiple hosts, not just github. Additionally, it was designed to eventually allow support for querying not just the count of pull requests, but returning the pull requests as well. Finally, it was  also designed to allow for additional statuses, not just open.

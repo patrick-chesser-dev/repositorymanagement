@@ -35,6 +35,15 @@ describe('httpService negative tests', () => {
         };
 
         const sut = new Sut(mockAxios);
+        expect(async () => await sut.unAuthenticatedGet(null)).rejects.toThrow(NullArgumentError);
+    });
+
+    test('get should return error response if get throws', async () => {
+        const mockAxios = {
+            get: async () => { throw new TestError; }
+        };
+
+        const sut = new Sut(mockAxios);
         const result = await sut.unAuthenticatedGet('https://shouldthrow.com');
         expect(result.status).toEqual(404);
     });

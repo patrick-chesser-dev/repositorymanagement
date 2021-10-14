@@ -41,8 +41,6 @@ describe('httpService negative tests', () => {
 
     test('get should throw NullArgumentError if axios is null', async () => {
 
-        const sut =
-
-            await expect(async () => new Sut()).rejects.toThrow(NullArgumentError);
+        const sut = await expect(async () => new Sut()).rejects.toThrow(NullArgumentError);
     });
 });

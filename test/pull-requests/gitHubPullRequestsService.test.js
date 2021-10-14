@@ -7,7 +7,7 @@ const { NullArgumentError, ErrorResponseError, NotFoundError, InvalidArgumentErr
 const buildMockHttpService = (generator) => {
     HttpService.mockImplementation(() => {
         return {
-            unAuthenticatedGet: (url) => generator()
+            unAuthenticatedGet: () => generator()
         };
     });
 

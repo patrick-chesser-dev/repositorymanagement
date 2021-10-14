@@ -10,6 +10,9 @@ The system has been designed with the intention of being able to support multipl
 
 ![Context Diagram](/design/images/Context.png)
 
+### Container Diagram
+![Container Diagram](/design/images/Container.png)
+
 ### Component Diagram
 
 #### Overview

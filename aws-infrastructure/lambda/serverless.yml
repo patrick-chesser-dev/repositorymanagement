@@ -4,7 +4,7 @@
 service: RepoMgmt-LambdaResources
 provider:
   name: aws
-  deploymentBucket: pc-repo-mgmt
+  deploymentBucket: ${opt:bucket}
   stage: ${opt:stage}
   region: ${opt:region}
   runtime: nodejs14.x

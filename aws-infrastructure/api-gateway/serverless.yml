@@ -1,7 +1,7 @@
 service: RepoMgmt-APIGatewayResources
 provider:
   name: aws
-  deploymentBucket: pc-repo-mgmt
+  deploymentBucket: ${opt:bucket}
   stage: ${opt:stage}
   region: ${opt:region}
 functions: null

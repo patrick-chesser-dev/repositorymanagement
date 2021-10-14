@@ -116,6 +116,23 @@ describe('GitHubPullRequestsService Happy Path Tests', () => {
 });
 
 describe('GitHubPullRequestsService Negative Tests', () => {
+    
+    test('missing url shold throw NullArgumentError', async () => {
+        const url = null
+        const isCountOnly = 'true';
+        const status = 'open';
+
+        const dataGenerator = () => {
+            return {
+                status: 404,
+                data: []
+            };
+        };
+        const mockHttpService = buildMockHttpService(dataGenerator);
+        const sut = new Sut(mockHttpService);
+        expect(async () => await sut.getPullRequests(url, status, isCountOnly)).rejects.toThrow(NullArgumentError);
+    });
+    
     test('404 from GitHub should throw NotFoundError', async () => {
         const url = new URL('https://github.com/user/repo/');
         const isCountOnly = 'true';
@@ -165,7 +182,7 @@ describe('GitHubPullRequestsService Negative Tests', () => {
         expect(async () => await sut.getPullRequests(url, status, isCountOnly)).rejects.toThrow(InvalidArgumentError);
     });
 
-    test('missing status should throw InvalidArgumentError', async () => {
+    test('missing status should throw NullArgumentError', async () => {
         const url = new URL('https://github.com/user/repo/');
         const isCountOnly = 'true';
         
@@ -178,6 +195,39 @@ describe('GitHubPullRequestsService Negative Tests', () => {
         const mockHttpService = buildMockHttpService(dataGenerator);
         const sut = new Sut(mockHttpService);
         expect(async () => await sut.getPullRequests(url, null, isCountOnly)).rejects.toThrow(NullArgumentError);
+    });
+
+
+    test('missing countonly should throw NullArgumentError', async () => {
+        const url = new URL('https://github.com/user/repo/');
+        const status = 'open';
+        
+        const dataGenerator = () => {
+            return {
+                status: 200,
+                data: []
+            };
+        };
+        const mockHttpService = buildMockHttpService(dataGenerator);
+        const sut = new Sut(mockHttpService);
+        expect(async () => await sut.getPullRequests(url, status, null)).rejects.toThrow(NullArgumentError);
+    });
+
+    test('supplied countonly of anything but true should throw InvalidArgumentError', async () => {
+        const url = new URL('https://github.com/user/repo/');
+        const isCountOnly = 'false';
+        const status = 'open';
+        
+        const dataGenerator = () => {
+            return {
+                status: 200,
+                data: []
+            };
+        };
+        const mockHttpService = buildMockHttpService(dataGenerator);
+        const sut = new Sut(mockHttpService);
+
+        expect(async () => await sut.getPullRequests(url, status, isCountOnly)).rejects.toThrow(InvalidArgumentError);
     });
 
     test('null http service should throw NullArgumentError', () => {

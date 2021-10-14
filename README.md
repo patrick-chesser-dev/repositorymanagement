@@ -10,10 +10,8 @@ The system has been designed with the intention of being able to support multipl
 
 ![Context Diagram](/design/images/Context.png)
 
-### Container Diagram
-![Container Diagram](/design/images/Container.png)
-
 ### Component Diagram
+[Component Diagram](/design/images/Component.png)
 
 #### Overview
 While the potential usages of the system are broad, we are focusing on a very small slice of that potential. For version 1.0.0, we will focus exclusively on pull requests, specifically aggregating all open pull requests. We will implement this functionality against github, but will build out the infrastructure that will allow users to query against multiple repos, in addition to informing the users of which repos are supported. We will focus on public repos for now, so we will not need to support private repositories for this release.

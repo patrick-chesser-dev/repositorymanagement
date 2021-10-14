@@ -10,11 +10,17 @@ The system has been designed with the intention of being able to support multipl
 
 ![Context Diagram](/design/images/Context.png)
 
+### Container Diagram
+![Container Diagram](/design/images/Container.png)
+
+#### Overview
+While the potential usages of the system are broad, we are focusing on a very small slice of that potential. For version 1.0.0, we will focus exclusively on pull requests, specifically aggregating all open pull requests. We will implement this functionality against github, but will build out the infrastructure that will allow users to query against multiple repos, in addition to informing the users of which repos are supported. We will focus on public repos for now, so we will not need to support private repositories for this release.
+
 ### Component Diagram
 ![Component Diagram](/design/images/Component.png)
 
 #### Overview
-While the potential usages of the system are broad, we are focusing on a very small slice of that potential. For version 1.0.0, we will focus exclusively on pull requests, specifically aggregating all open pull requests. We will implement this functionality against github, but will build out the infrastructure that will allow users to query against multiple repos, in addition to informing the users of which repos are supported. We will focus on public repos for now, so we will not need to support private repositories for this release.
+Digging into the Container diagram a bit deeper, we can see the mix of services and technologies to be employed in this particular implementation of the project. There is a Common module that will be able to be reused across future services, and a module dedicated solely to pull-requests. There is built in support for adding another source host (e.g. gitlab) without needing to add a lo of branching logic to the service responsible for managing the pull requests. 
 
 #### High Level Design
 We will employ a serverless architecture, using AWS Cloud Native Tools: API Gateway, Lambda, and S3. 

@@ -37,3 +37,11 @@ class NotFoundError extends Error {
     }
 }
 exports.NotFoundError = NotFoundError;
+
+class RateLimitExceededError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'RateLimitExceededError';
+    }
+}
+exports.RateLimitExceededError = RateLimitExceededError;

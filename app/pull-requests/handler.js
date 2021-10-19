@@ -1,4 +1,4 @@
-const { InvalidArgumentError, NullArgumentError, NotFoundError } = require('../common/errors');
+const { InvalidArgumentError, NullArgumentError, NotFoundError, RateLimitExceededError } = require('../common/errors');
 
 class Handler {
     #container = null;
@@ -18,7 +18,7 @@ class Handler {
             const status = event.queryStringParameters.status;
 
             const service = serviceFactory.resolveService(sourceUrl);
-            const result = await service.getPullRequests(new URL(sourceUrl), status, isCountOnly);
+            const result = await service.getPullRequestCommits(new URL(sourceUrl), status, isCountOnly);
             return responseBuilder.buildResponse(result, 200);
 
         } catch (ex) {
@@ -28,6 +28,9 @@ class Handler {
             } else if (ex instanceof NotFoundError) {
                 console.error(`Repo could not be found. Error: ${ex.stack}`);
                 return responseBuilder.buildResponse({ status: 'Not Found' }, 404);
+            } else if (ex instanceof RateLimitExceededError) {
+                console.error(`Rate limit exceeded. Check rate limit and try again later. Error: ${ex.stack}`);
+                return responseBuilder.buildResponse({ status: 'Not Found' }, 429);
             } else {
                 console.error(`Error retrieving supported hosts. Error: ${ex.stack}`);
                 return responseBuilder.buildResponse('Unexpected error retrieving supported hosts', 500);

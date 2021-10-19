@@ -1,5 +1,5 @@
 # Repository Management Sample Project
-This is a project demonstrating a simple serverless application that provides convenience functionality for management of public git repositories. The scope of this project is to simply provide an API that will allow a user to request the count of the number of open pull requests against a given public github repository. I have designed the application to make it flexible enough to allow for management of other repositories in the future, as well as made it easy to provide additional functionality.
+This is a project demonstrating a simple serverless application that provides convenience functionality for management of public git repositories. The scope of this project is to simply provide an API that will allow a user to request the count of the number of commits per open pull requests against a given public github repository. I have designed the application to make it flexible enough to allow for management of other repositories in the future, as well as made it easy to provide additional functionality.
 
 ## Architecture/Design Documents
 ### Context Diagram
@@ -14,7 +14,7 @@ The system has been designed with the intention of being able to support multipl
 ![Container Diagram](/design/images/Container.png)
 
 #### Overview
-While the potential usages of the system are broad, we are focusing on a very small slice of that potential. For version 1.0.0, we will focus exclusively on pull requests, specifically aggregating all open pull requests. We will implement this functionality against github, but will build out the infrastructure that will allow users to query against multiple repos, in addition to informing the users of which repos are supported. We will focus on public repos for now, so we will not need to support private repositories for this release.
+While the potential usages of the system are broad, we are focusing on a very small slice of that potential. For version 1.0.0, we will focus exclusively on pull requests, specifically aggregating all open pull requests. We will implement this functionality against github, but will build out the infrastructure that will allow users to query against multiple repos, in addition to informing the users of which repos are supported. We will focus on public repos for now, so we will not need to support private repositories for this release. Note: you could experience throttling errors since we are running unauthenticated. 
 
 ### Component Diagram
 ![Component Diagram](/design/images/Component.png)
@@ -63,13 +63,13 @@ We could do a stack per lambda, but as the system grows, we will run into resour
 The service was designed to be flexible and (eventually) allow support for multiple hosts, not just github. Additionally, it was designed to eventually allow support for querying not just the count of pull requests, but returning the pull requests as well. Finally, it was  also designed to allow for additional statuses, not just open.
 
 Since the current requirement for this project is to support getting the number of open pull requests, that is the only data that the system will allow the user to request. As such, url will need to be in the below format:
-> {apiGatewayHost}/v1/pullrequests?sourceurl={githubRepoUrl}&status=open&countonly=true
+> {apiGatewayHost}/v1/pullrequests/commits?sourceurl={githubRepoUrl}&status=open&countonly=true
 
 Any other format will result in an error response. 
 
 ### About the URL Format
 I went back and forth on using query params vs pathing in the URL. For instance, I could have done something like this:
-v1/{repoHost}/{repoUser}/{repoName}/pullrequests/
+v1/{repoHost}/{repoUser}/{repoName}/pullrequests/commits
 
 However, I felt this could prove inflexible if there were different ways a repo is tracked in a new system.
 

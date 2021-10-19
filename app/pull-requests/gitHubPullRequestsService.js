@@ -1,4 +1,4 @@
-const { NullArgumentError, ErrorResponseError, NotFoundError, InvalidArgumentError } = require('../common/errors');
+const { NullArgumentError, ErrorResponseError, NotFoundError, InvalidArgumentError, RateLimitExceededError } = require('../common/errors');
 
 class GitHubPullRequestsService {
     #maxPageSize = 100;
@@ -15,23 +15,35 @@ class GitHubPullRequestsService {
 
     // this is where type script interfaces would be handy
     // any service should implement this interface to start
-    async getPullRequests(repoUrl, status, isCountOnly) {
-
+    async getPullRequestCommits(repoUrl, status, isCountOnly) {
         this.#validateInputs(status, isCountOnly);
-
-        let morePages = true;
-        let pullRequests = [];
 
         if (!repoUrl) {
             throw new NullArgumentError('repoUrl cannot be null');
         }
+        try {
+            const url = `${this.#baseUrl}${repoUrl.pathname}/pulls?per_page=${this.#maxPageSize}&status=${status}`;
+            const pullRequests = await this.#getAllPagedData(url);
+            const commits = pullRequests.map(pr => this.#getAllPagedData(`${pr.commits_url}?per_page=${this.#maxPageSize}`));
 
-        const url = `${this.#baseUrl}${repoUrl.pathname}/pulls?per_page=${this.#maxPageSize}&status=${status}`;
+            const result = await Promise.all(commits);
+
+            return isCountOnly ? { commitsCount: result.flat(1).length } : { commitsCount: result };
+        } catch (error) {
+            console.error(`Error retrieving pull request commits. Error: ${error}`);
+            throw error;
+        }
+    }
+
+    async #getAllPagedData(url) {
+        let result = [];
         let count = 1;
+        let morePages = true;
+
         do {
             const response = await this.#httpService.unAuthenticatedGet(`${url}&page=${count}`);
-            this.#validateResponse(response, repoUrl);
-            pullRequests = pullRequests.concat(response.data);
+            this.#validateResponse(response, url);
+            result = result.concat(response.data);
 
             if (response.data.length === this.#maxPageSize) {
                 ++count;
@@ -41,7 +53,7 @@ class GitHubPullRequestsService {
 
         } while (morePages);
 
-        return isCountOnly ? { pullRequestsCount: pullRequests.length } : { pullRequests: pullRequests };
+        return result;
     }
 
     #validateInputs(status, isCountOnly) {
@@ -66,6 +78,10 @@ class GitHubPullRequestsService {
     #validateResponse(response, repoUrl) {
         if (response.status === 404) {
             throw new NotFoundError('Error response received when calling github.');
+        }
+        if (response.status === 429) {
+            console.log('Rate Limit Exceeded.');
+            throw new RateLimitExceededError('Rate Limit Exceeded');
         }
         if (response.status < 200 || response.status > 299) {
             console.log(`Error response when querying github api. URL: ${repoUrl.toString()}. Response: ${JSON.stringify(response)}`);

@@ -22,7 +22,7 @@ functions:
     timeout: 20
     events:
       - http: 
-          path: v1/pullrequests/
+          path: v1/pullrequests/commits
           method: get
           cors: true
           integration: lambda-proxy
